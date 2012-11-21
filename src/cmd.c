@@ -164,9 +164,9 @@ static int cmd_quit(int argc, char *argv[])
 	return 0;
 }
 
-static unsigned int find_cmd(char *cmd)
+static int find_cmd(char *cmd)
 {
-	unsigned int i = -1;
+	int i = -1;
 	char *p;
 	for (i = 0; i < cmd_table_length; ++i) {
 		p = cmd_table[i].command;
