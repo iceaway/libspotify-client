@@ -1,0 +1,1 @@
+This is an experimental client for spotify using libspotify. At the moment functionality is extremely limited. It is possible to log in, search for songs, and log out. It's buggy and occasional segfaults happen (almost always when logging out). This project is mostly self-educational, but the goal is to create a spotify-daemon with a remote interface.
