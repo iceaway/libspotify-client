@@ -5,6 +5,7 @@
 #include "session.h"
 #include "cmd.h"
 #include "common.h"
+#include "audio.h"
 
 #define USER_AGENT "libspotify-server"
 
@@ -241,8 +242,10 @@ int main(int argc, char *argv[])
 
 	pthread_mutex_init(&g_notify_mutex, NULL);
 	pthread_cond_init(&g_notify_cond, NULL);
+	audio_init();
 	session_init();
 	cmd_init(cmd_notify);
+
 	
 	do {
 		clock_gettime(CLOCK_REALTIME, &ts);

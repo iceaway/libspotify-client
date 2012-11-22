@@ -8,9 +8,12 @@ LDFLAGS += -L${LIBSPOTIFY}
 LDLIBS += -lspotify
 LDLIBS += -lpthread
 LDLIBS += -lreadline
+LDLIBS += -lasound
+
 OBJS += cmd.o
 OBJS += session.o
 OBJS += appkey.o
+OBJS += audio.o 
 
 ${TARGET}: ${OBJS}
 	${CC} ${CFLAGS} ${LDLIBS} ${LDFLAGS} ${OBJS} -o ${TARGET}
