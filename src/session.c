@@ -100,6 +100,9 @@ static void logged_out(sp_session *session)
 	(void)session;
 	printf("Logged out!\n");
 	fflush(stdout);
+	pthread_mutex_lock(&g_notify_mutex);
+	pthread_cond_signal(&g_notify_cond);
+	pthread_mutex_unlock(&g_notify_mutex);
 	g_is_logged_in = 0;
 }
 
@@ -235,7 +238,6 @@ int main(int argc, char *argv[])
 	
 	(void)argc;
 	(void)argv;
-	
 
 	pthread_mutex_init(&g_notify_mutex, NULL);
 	pthread_cond_init(&g_notify_cond, NULL);
@@ -274,6 +276,25 @@ int main(int argc, char *argv[])
 	} while (!is_program_finished());
 
 	session_logout();
+	while (session_is_logged_in()) {
+       		clock_gettime(CLOCK_REALTIME, &ts);
+		ts.tv_sec += 1;
+
+		pthread_mutex_lock(&g_notify_mutex);
+		pthread_cond_timedwait(&g_notify_cond, &g_notify_mutex, &ts);
+		notify_events = g_notify_events;
+		g_notify_events = 0;
+		pthread_mutex_unlock(&g_notify_mutex);
+		if (notify_events) {
+			do {
+				error = sp_session_process_events(g_session, &timeout);
+				if (error != SP_ERROR_OK)
+					fprintf(stderr, "error processing events: %s\n",
+							sp_error_message(error));
+			} while (timeout == 0);
+		}
+	}
+
 	session_release();
 	cmd_destroy();
 

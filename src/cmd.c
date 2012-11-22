@@ -10,7 +10,7 @@
 #include "common.h"
 
 #define MAX_ARGUMENTS		32
-#define BUFFER_SIZE		512
+#define BUFFER_SIZE		1024
 #define MAX_USERNAME_LENGTH	128
 #define	MAX_PASSWORD_LENGTH	128
 
@@ -33,6 +33,7 @@ void cmd_done(void);
 
 const struct command cmd_table[] = {
 	{ "quit", "Quit the console", cmd_quit },
+	{ "exit", "Quit the console", cmd_quit },
 	{ "help", "Print a list of commands", cmd_help },
 	{ "echo", "Echo to terminal window", cmd_echo },
 	{ "login", "Login to spotify", cmd_login },
@@ -51,14 +52,21 @@ static pthread_cond_t g_cmdline_cond;
 static int g_end_program = 0;
 static notify_callback_fn g_ncb;
 
- int cmd_search(int argc, char *argv[])
+int cmd_search(int argc, char *argv[])
 {
+	char buf[BUFFER_SIZE] = { 0 };
+	int i;
+
 	if (argc <= 1) {
-		fprintf(stderr, "Not enough arguments. usage: %s \"search pattern\"\n", argv[0]);
+		fprintf(stderr, "Not enough arguments. usage: %s <search pattern>\n", argv[0]);
 		return -1;
 	} else {
-		session_search(argv[1]);
+		for (i = 1; i < argc; ++i) 
+			snprintf(buf + strlen(buf), BUFFER_SIZE - strlen(buf), "%s ", argv[i]);
+
+		session_search(buf);
 	}
+
 	return 0;
 
 }
@@ -166,7 +174,7 @@ static int cmd_quit(int argc, char *argv[])
 
 static int find_cmd(char *cmd)
 {
-	int i = -1;
+	unsigned int i = -1;
 	char *p;
 	for (i = 0; i < cmd_table_length; ++i) {
 		p = cmd_table[i].command;
