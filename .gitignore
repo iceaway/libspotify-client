@@ -1,4 +1,4 @@
-appkey.*
+appkey.c
 *.swp
 *.o
 cmd
